@@ -22,12 +22,13 @@
 
     <h2>Biblioteca da disciplina</h2>
 
-    <input
-      type="search"
-      id="busca-documentos"
-      placeholder="Buscar nos documentos..."
-      aria-label="Buscar documentos"
-    >
+   <select id="filtro-categoria">
+    <option value="">Todas as categorias</option>
+    <option value="Texto de estudo">Textos de estudo</option>
+    <option value="Resumo">Resumos</option>
+    <option value="Exercício">Exercícios</option>
+    <option value="Mapa conceitual">Mapas conceituais</option>
+   </select>
 
     <p id="estado-documentos" role="status">
       Carregando documentos...
