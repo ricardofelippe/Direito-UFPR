@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -7,6 +8,7 @@
   <title>Teoria do Direito</title>
   <link rel="stylesheet" href="direito.css">
 </head>
+
 <body>
   <header>
     <h1>Teoria do Direito</h1>
@@ -14,54 +16,110 @@
   </header>
 
   <main>
-    <p><a href="direito.html">← Voltar ao currículo</a></p>
+    <p>
+      <a href="direito.html">← Voltar ao currículo</a>
+    </p>
 
-    
-    
-<h2>Biblioteca da disciplina</h2>
+    <h2>Biblioteca da disciplina</h2>
 
-  <input
-    type="search"
-    id="busca-documentos"
-    placeholder="Buscar nos documentos..."
-    aria-label="Buscar documentos"
-  >
+    <input
+      type="search"
+      id="busca-documentos"
+      placeholder="Buscar nos documentos..."
+      aria-label="Buscar documentos"
+    >
 
-  <section class="lista-documentos">
+    <p id="estado-documentos" role="status">
+      Carregando documentos...
+    </p>
 
-    <article class="documento">
-      <h3>Introdução à Teoria do Direito</h3>
-      <p><strong>Categoria:</strong> Texto de estudo</p>
-      <p>Material introdutório da disciplina.</p>
-      <a
-        href="documentos/teoria-do-direito/introducao-teoria-do-direito.pdf"
-        target="_blank"
-        rel="noopener"
-      >
-        Abrir PDF
-      </a>
-    </article>
-
-  </section>
-
-  <script>
-    const busca = document.getElementById("busca-documentos");
-    const documentos = document.querySelectorAll(".documento");
-
-    busca.addEventListener("input", () => {
-      const termo = busca.value.toLowerCase();
-
-      documentos.forEach((documento) => {
-        documento.hidden =
-          !documento.textContent.toLowerCase().includes(termo);
-      });
-    });
-  </script>
-
-
+    <section
+      id="lista-documentos"
+      class="lista-documentos"
+    ></section>
 
     <h2>Resumos e anotações</h2>
     <p>Em breve, meus resumos aparecerão aqui.</p>
   </main>
+
+  <script>
+    async function carregarDocumentos() {
+      const estado = document.getElementById("estado-documentos");
+      const lista = document.getElementById("lista-documentos");
+      const busca = document.getElementById("busca-documentos");
+
+      try {
+        const resposta = await fetch("./documentos.json");
+
+        if (!resposta.ok) {
+          throw new Error("Não foi possível carregar documentos.json.");
+        }
+
+        const documentos = await resposta.json();
+
+        function exibirDocumentos() {
+          const termo = busca.value
+            .trim()
+            .toLocaleLowerCase("pt-BR");
+
+          const filtrados = documentos.filter((doc) => {
+            const texto = [
+              doc.titulo,
+              doc.categoria,
+              doc.descricao
+            ].filter(Boolean).join(" ").toLocaleLowerCase("pt-BR");
+
+            return doc.disciplina === "Teoria do Direito"
+              && texto.includes(termo);
+          });
+
+          lista.replaceChildren();
+
+          filtrados.forEach((doc) => {
+            const artigo = document.createElement("article");
+            artigo.className = "documento";
+
+            const titulo = document.createElement("h3");
+            titulo.textContent = doc.titulo || "Documento sem título";
+
+            const categoria = document.createElement("p");
+            categoria.textContent =
+              "Categoria: " + (doc.categoria || "Não informada");
+
+            const descricao = document.createElement("p");
+            descricao.textContent =
+              doc.descricao || "Sem descrição.";
+
+            artigo.append(titulo, categoria, descricao);
+
+            if (doc.arquivo) {
+              const link = document.createElement("a");
+              link.href = doc.arquivo;
+              link.textContent = "Abrir PDF";
+              link.target = "_blank";
+              link.rel = "noopener";
+              artigo.appendChild(link);
+            }
+
+            lista.appendChild(artigo);
+          });
+
+          estado.textContent = filtrados.length
+            ? filtrados.length + " documento(s) encontrado(s)."
+            : "Nenhum documento encontrado.";
+        }
+
+        busca.addEventListener("input", exibirDocumentos);
+        exibirDocumentos();
+
+      } catch (erro) {
+        console.error(erro);
+        estado.textContent =
+          "Erro ao carregar o catálogo. Verifique documentos.json.";
+      }
+    }
+
+    carregarDocumentos();
+  </script>
 </body>
 </html>
