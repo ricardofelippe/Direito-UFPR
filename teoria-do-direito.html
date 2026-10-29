@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -22,28 +21,40 @@
 
     <h2>Biblioteca da disciplina</h2>
 
-   <select id="filtro-categoria">
-    <option value="">Todas as categorias</option>
-    <option value="Texto de estudo">Textos de estudo</option>
-    <option value="Resumo">Resumos</option>
-    <option value="Exercício">Exercícios</option>
-    <option value="Mapa conceitual">Mapas conceituais</option>
-   </select>
+    <!-- Campo de busca -->
+    <input
+      type="search"
+      id="busca-documentos"
+      placeholder="Buscar por título, categoria ou descrição..."
+      aria-label="Buscar documentos"
+    >
 
+    <!-- Filtro por categoria -->
+    <select id="filtro-categoria" aria-label="Filtrar por categoria">
+      <option value="">Todas as categorias</option>
+      <option value="Texto de estudo">Textos de estudo</option>
+      <option value="Resumo">Resumos</option>
+      <option value="Exercício">Exercícios</option>
+      <option value="Mapa conceitual">Mapas conceituais</option>
+    </select>
+
+    <!-- Mensagem de carregamento e resultados -->
     <p id="estado-documentos" role="status">
       Carregando documentos...
     </p>
 
+    <!-- Os documentos serão inseridos aqui pelo JavaScript -->
     <section
       id="lista-documentos"
       class="lista-documentos"
     ></section>
 
     <h2>Resumos e anotações</h2>
-    <p>Em breve, meus resumos aparecerão aqui.</p>
+    <p>
+      Em breve, meus resumos aparecerão aqui.
+    </p>
   </main>
 
-  
   <script>
     async function carregarDocumentos() {
       const estado = document.getElementById("estado-documentos");
@@ -61,7 +72,10 @@
         const documentos = await resposta.json();
 
         function exibirDocumentos() {
-          const termo = busca.value.trim().toLocaleLowerCase("pt-BR");
+          const termo = busca.value
+            .trim()
+            .toLocaleLowerCase("pt-BR");
+
           const categoriaSelecionada = filtroCategoria.value;
 
           const filtrados = documentos.filter((doc) => {
@@ -98,7 +112,8 @@
               "Categoria: " + (doc.categoria || "Não informada");
 
             const descricao = document.createElement("p");
-            descricao.textContent = doc.descricao || "Sem descrição.";
+            descricao.textContent =
+              doc.descricao || "Sem descrição.";
 
             artigo.append(titulo, categoria, descricao);
 
@@ -107,7 +122,7 @@
               link.href = doc.arquivo;
               link.textContent = "Abrir PDF";
               link.target = "_blank";
-              link.rel = "noopener";
+              link.rel = "noopener noreferrer";
               artigo.appendChild(link);
             }
 
@@ -120,7 +135,11 @@
         }
 
         busca.addEventListener("input", exibirDocumentos);
-        filtroCategoria.addEventListener("change", exibirDocumentos);
+
+        filtroCategoria.addEventListener(
+          "change",
+          exibirDocumentos
+        );
 
         exibirDocumentos();
 
@@ -136,3 +155,5 @@
 
 </body>
 </html>
+
+
