@@ -43,84 +43,96 @@
     <p>Em breve, meus resumos aparecerão aqui.</p>
   </main>
 
-  <script>
-    async function carregarDocumentos() {
-      const estado = document.getElementById("estado-documentos");
-      const lista = document.getElementById("lista-documentos");
-      const busca = document.getElementById("busca-documentos");
+  
+<script>
+  async function carregarDocumentos() {
+    const estado = document.getElementById("estado-documentos");
+    const lista = document.getElementById("lista-documentos");
+    const busca = document.getElementById("busca-documentos");
+    const filtroCategoria = document.getElementById("filtro-categoria");
 
-      try {
-        const resposta = await fetch("./documentos.json");
+    try {
+      const resposta = await fetch("./documentos.json");
 
-        if (!resposta.ok) {
-          throw new Error("Não foi possível carregar documentos.json.");
-        }
+      if (!resposta.ok) {
+        throw new Error("Não foi possível carregar documentos.json.");
+      }
 
-        const documentos = await resposta.json();
+      const documentos = await resposta.json();
 
-        function exibirDocumentos() {
-          const termo = busca.value
-            .trim()
+      function exibirDocumentos() {
+        const termo = busca.value.trim().toLocaleLowerCase("pt-BR");
+        const categoriaSelecionada = filtroCategoria.value;
+
+        const filtrados = documentos.filter((doc) => {
+          const texto = [
+            doc.titulo,
+            doc.categoria,
+            doc.descricao
+          ]
+            .filter(Boolean)
+            .join(" ")
             .toLocaleLowerCase("pt-BR");
 
-          const filtrados = documentos.filter((doc) => {
-            const texto = [
-              doc.titulo,
-              doc.categoria,
-              doc.descricao
-            ].filter(Boolean).join(" ").toLocaleLowerCase("pt-BR");
+          return (
+            doc.disciplina === "Teoria do Direito" &&
+            texto.includes(termo) &&
+            (
+              categoriaSelecionada === "" ||
+              doc.categoria === categoriaSelecionada
+            )
+          );
+        });
 
-            return doc.disciplina === "Teoria do Direito"
-              && texto.includes(termo);
-          });
+        lista.replaceChildren();
 
-          lista.replaceChildren();
+        filtrados.forEach((doc) => {
+          const artigo = document.createElement("article");
+          artigo.className = "documento";
 
-          filtrados.forEach((doc) => {
-            const artigo = document.createElement("article");
-            artigo.className = "documento";
+          const titulo = document.createElement("h3");
+          titulo.textContent = doc.titulo || "Documento sem título";
 
-            const titulo = document.createElement("h3");
-            titulo.textContent = doc.titulo || "Documento sem título";
+          const categoria = document.createElement("p");
+          categoria.textContent =
+            "Categoria: " + (doc.categoria || "Não informada");
 
-            const categoria = document.createElement("p");
-            categoria.textContent =
-              "Categoria: " + (doc.categoria || "Não informada");
+          const descricao = document.createElement("p");
+          descricao.textContent = doc.descricao || "Sem descrição.";
 
-            const descricao = document.createElement("p");
-            descricao.textContent =
-              doc.descricao || "Sem descrição.";
+          artigo.append(titulo, categoria, descricao);
 
-            artigo.append(titulo, categoria, descricao);
+          if (doc.arquivo) {
+            const link = document.createElement("a");
+            link.href = doc.arquivo;
+            link.textContent = "Abrir PDF";
+            link.target = "_blank";
+            link.rel = "noopener";
+            artigo.appendChild(link);
+          }
 
-            if (doc.arquivo) {
-              const link = document.createElement("a");
-              link.href = doc.arquivo;
-              link.textContent = "Abrir PDF";
-              link.target = "_blank";
-              link.rel = "noopener";
-              artigo.appendChild(link);
-            }
+          lista.appendChild(artigo);
+        });
 
-            lista.appendChild(artigo);
-          });
-
-          estado.textContent = filtrados.length
-            ? filtrados.length + " documento(s) encontrado(s)."
-            : "Nenhum documento encontrado.";
-        }
-
-        busca.addEventListener("input", exibirDocumentos);
-        exibirDocumentos();
-
-      } catch (erro) {
-        console.error(erro);
-        estado.textContent =
-          "Erro ao carregar o catálogo. Verifique documentos.json.";
+        estado.textContent = filtrados.length
+          ? filtrados.length + " documento(s) encontrado(s)."
+          : "Nenhum documento encontrado.";
       }
-    }
 
-    carregarDocumentos();
-  </script>
+      busca.addEventListener("input", exibirDocumentos);
+      filtroCategoria.addEventListener("change", exibirDocumentos);
+
+      exibirDocumentos();
+
+    } catch (erro) {
+      console.error(erro);
+      estado.textContent =
+        "Erro ao carregar o catálogo. Verifique documentos.json.";
+    }
+  }
+
+  carregarDocumentos();
+</script>
+
 </body>
 </html>
