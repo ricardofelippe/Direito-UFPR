@@ -17,14 +17,47 @@
     <p><a href="direito.html">← Voltar ao currículo</a></p>
 
     
-    <h2>Documentos</h2>
-    <ul>
-    <li>
-      <a href="documentos/teoria-do-direito/introducao-teoria-do-direito.pdf" target="_blank" rel="noopener">
-        Introdução à Teoria do Direito (PDF)
+    
+<h2>Biblioteca da disciplina</h2>
+
+  <input
+    type="search"
+    id="busca-documentos"
+    placeholder="Buscar nos documentos..."
+    aria-label="Buscar documentos"
+  >
+
+  <section class="lista-documentos">
+
+    <article class="documento">
+      <h3>Introdução à Teoria do Direito</h3>
+      <p><strong>Categoria:</strong> Texto de estudo</p>
+      <p>Material introdutório da disciplina.</p>
+      <a
+        href="documentos/teoria-do-direito/introducao-teoria-do-direito.pdf"
+        target="_blank"
+        rel="noopener"
+      >
+        Abrir PDF
       </a>
-    </li>
-    </ul>
+    </article>
+
+  </section>
+
+  <script>
+    const busca = document.getElementById("busca-documentos");
+    const documentos = document.querySelectorAll(".documento");
+
+    busca.addEventListener("input", () => {
+      const termo = busca.value.toLowerCase();
+
+      documentos.forEach((documento) => {
+        documento.hidden =
+          !documento.textContent.toLowerCase().includes(termo);
+      });
+    });
+  </script>
+
 
 
     <h2>Resumos e anotações</h2>
