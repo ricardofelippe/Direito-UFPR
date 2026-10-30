@@ -1,4 +1,5 @@
 
+
 [
   {
     "titulo": "Introdução à Teoria do Direito",
@@ -6,5 +7,33 @@
     "descricao": "Material introdutório da disciplina.",
     "disciplina": "Teoria do Direito",
     "arquivo": "documentos/teoria-do-direito/introducao-teoria-do-direito.pdf"
+  },
+  {
+    "titulo": "Resumo - Introdução à Teoria do Direito",
+    "categoria": "Resumo",
+    "descricao": "Modelo de resumo para organizar os principais conceitos da disciplina.",
+    "disciplina": "Teoria do Direito",
+    "arquivo": ""
+  },
+  {
+    "titulo": "Exercícios de Teoria do Direito",
+    "categoria": "Exercício",
+    "descricao": "Modelo para cadastrar exercícios e questões de revisão.",
+    "disciplina": "Teoria do Direito",
+    "arquivo": ""
+  },
+  {
+    "titulo": "Conceitos fundamentais do Direito",
+    "categoria": "Mapa conceitual",
+    "descricao": "Modelo para organizar visualmente os conceitos fundamentais.",
+    "disciplina": "Teoria do Direito",
+    "arquivo": ""
+  },
+  {
+    "titulo": "Introdução à Filosofia",
+    "categoria": "Texto de estudo",
+    "descricao": "Exemplo de cadastro de material de outra disciplina.",
+    "disciplina": "Filosofia do Direito",
+    "arquivo": ""
   }
 ]
