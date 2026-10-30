@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Biblioteca de Direito</title>
+  <link rel="stylesheet" href="direito.css">
+</head>
+
+<body>
+  <header>
+    <h1>Biblioteca de Direito</h1>
+    <p>Meu espaço de materiais e estudos</p>
+  </header>
+
+  <main>
+    <p><a href="direito.html">← Voltar ao currículo</a></p>
+
+    <h2>Todos os documentos</h2>
+
+    <input
+      type="search"
+      id="busca"
+      placeholder="Buscar por título ou descrição..."
+    >
+
+    <select id="filtro-disciplina">
+      <option value="">Todas as disciplinas</option>
+    </select>
+
+    <select id="filtro-categoria">
+      <option value="">Todas as categorias</option>
+    </select>
+
+    <p id="estado" role="status">Carregando documentos...</p>
+
+    <section id="lista-documentos" class="lista-documentos"></section>
+  </main>
+
+  <script>
+    async function carregarBiblioteca() {
+      const busca = document.getElementById("busca");
+      const filtroDisciplina = document.getElementById("filtro-disciplina");
+      const filtroCategoria = document.getElementById("filtro-categoria");
+      const lista = document.getElementById("lista-documentos");
+      const estado = document.getElementById("estado");
+
+      try {
+        const resposta = await fetch("./documentos.json");
+
+        if (!resposta.ok) {
+          throw new Error("Erro ao carregar documentos.json");
+        }
+
+        const documentos = await resposta.json();
+
+        // Identifica disciplinas e categorias cadastradas
+        const disciplinas = [...new Set(
+          documentos.map(doc => doc.disciplina).filter(Boolean)
+        )].sort();
+
+        const categorias = [...new Set(
+          documentos.map(doc => doc.categoria).filter(Boolean)
+        )].sort();
+
+        disciplinas.forEach(nome => {
+          const opcao = document.createElement("option");
+          opcao.value = nome;
+          opcao.textContent = nome;
+          filtroDisciplina.appendChild(opcao);
+        });
+
+        categorias.forEach(nome => {
+          const opcao = document.createElement("option");
+          opcao.value = nome;
+          opcao.textContent = nome;
+          filtroCategoria.appendChild(opcao);
+        });
+
+        function exibirDocumentos() {
+          const termo = busca.value.trim().toLocaleLowerCase("pt-BR");
+          const disciplina = filtroDisciplina.value;
+          const categoria = filtroCategoria.value;
+
+          const filtrados = documentos.filter(doc => {
+            const texto = [
+              doc.titulo,
+              doc.descricao,
+              doc.disciplina,
+              doc.categoria
+            ].filter(Boolean).join(" ").toLocaleLowerCase("pt-BR");
+
+            return texto.includes(termo) &&
+              (!disciplina || doc.disciplina === disciplina) &&
+              (!categoria || doc.categoria === categoria);
+          });
+
+          lista.replaceChildren();
+
+          filtrados.forEach(doc => {
+            const artigo = document.createElement("article");
+            artigo.className = "documento";
+
+            const titulo = document.createElement("h3");
+            titulo.textContent = doc.titulo || "Documento sem título";
+
+            const disciplinaTexto = document.createElement("p");
+            disciplinaTexto.textContent =
+              "Disciplina: " + (doc.disciplina || "Não informada");
+
+            const categoriaTexto = document.createElement("p");
+            categoriaTexto.textContent =
+              "Categoria: " + (doc.categoria || "Não informada");
+
+            const descricao = document.createElement("p");
+            descricao.textContent = doc.descricao || "Sem descrição.";
+
+            artigo.append(
+              titulo,
+              disciplinaTexto,
+              categoriaTexto,
+              descricao
+            );
+
+            if (doc.arquivo) {
+              const link = document.createElement("a");
+              link.href = doc.arquivo;
+              link.textContent = "Abrir PDF";
+              link.target = "_blank";
+              link.rel = "noopener noreferrer";
+              artigo.appendChild(link);
+            }
+
+            lista.appendChild(artigo);
+          });
+
+          estado.textContent = filtrados.length
+            ? filtrados.length + " documento(s) encontrado(s)."
+            : "Nenhum documento encontrado.";
+        }
+
+        busca.addEventListener("input", exibirDocumentos);
+        filtroDisciplina.addEventListener("change", exibirDocumentos);
+        filtroCategoria.addEventListener("change", exibirDocumentos);
+
+        exibirDocumentos();
+
+      } catch (erro) {
+        console.error(erro);
+        estado.textContent =
+          "Erro ao carregar a biblioteca. Verifique documentos.json.";
+      }
+    }
+
+    carregarBiblioteca();
+  </script>
+</body>
+</html>
