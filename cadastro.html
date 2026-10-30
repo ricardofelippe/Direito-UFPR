@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cadastro de materiais</title>
+  <link rel="stylesheet" href="direito.css">
+</head>
+
+<body>
+  <header>
+    <h1>Cadastro de materiais</h1>
+    <p>Adicionar materiais à minha biblioteca de estudos</p>
+  </header>
+
+  <main>
+    <p><a href="biblioteca.html">← Voltar à biblioteca</a></p>
+
+    <h2>Novo material</h2>
+
+    <form id="form-cadastro">
+
+      <p>
+        <label for="disciplina">Disciplina</label><br>
+        <input
+          type="text"
+          id="disciplina"
+          placeholder="Ex.: Teoria do Direito"
+          required
+        >
+      </p>
+
+      <p>
+        <label for="titulo">Título do material</label><br>
+        <input
+          type="text"
+          id="titulo"
+          placeholder="Ex.: Introdução à Teoria do Direito"
+          required
+        >
+      </p>
+
+      <p>
+        <label for="categoria">Categoria</label><br>
+        <select id="categoria" required>
+          <option value="">Selecione uma categoria</option>
+          <option value="Texto de estudo">Texto de estudo</option>
+          <option value="Resumo">Resumo</option>
+          <option value="Exercício">Exercício</option>
+          <option value="Mapa conceitual">Mapa conceitual</option>
+        </select>
+      </p>
+
+      <p>
+        <label for="descricao">Descrição</label><br>
+        <textarea
+          id="descricao"
+          placeholder="Descreva brevemente o material..."
+          rows="4"
+        ></textarea>
+      </p>
+
+      <p>
+        <label for="arquivo">Caminho do PDF</label><br>
+        <input
+          type="text"
+          id="arquivo"
+          placeholder="documentos/teoria-do-direito/arquivo.pdf"
+        >
+      </p>
+
+      <button type="submit">Gerar cadastro JSON</button>
+    </form>
+
+    <section id="resultado" hidden>
+      <h2>Cadastro gerado</h2>
+
+      <p>
+        Copie o conteúdo abaixo e acrescente o registro
+        ao arquivo documentos.json.
+      </p>
+
+      <textarea
+        id="json-gerado"
+        rows="12"
+        readonly
+      ></textarea>
+
+      <p>
+        <button type="button" id="copiar">
+          Copiar JSON
+        </button>
+      </p>
+
+      <p id="mensagem" role="status"></p>
+    </section>
+  </main>
+
+  <script>
+    const formulario = document.getElementById("form-cadastro");
+    const resultado = document.getElementById("resultado");
+    const jsonGerado = document.getElementById("json-gerado");
+    const mensagem = document.getElementById("mensagem");
+
+    formulario.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const documento = {
+        titulo: document.getElementById("titulo").value.trim(),
+        categoria: document.getElementById("categoria").value,
+        descricao: document.getElementById("descricao").value.trim(),
+        disciplina: document.getElementById("disciplina").value.trim(),
+        arquivo: document.getElementById("arquivo").value.trim()
+      };
+
+      jsonGerado.value = JSON.stringify(documento, null, 2);
+
+      resultado.hidden = false;
+      mensagem.textContent = "";
+
+      resultado.scrollIntoView({
+        behavior: "smooth"
+      });
+    });
+
+    document.getElementById("copiar").addEventListener("click", async function() {
+      try {
+        await navigator.clipboard.writeText(jsonGerado.value);
+        mensagem.textContent = "JSON copiado com sucesso!";
+      } catch (erro) {
+        jsonGerado.select();
+        mensagem.textContent =
+          "Selecione e copie o conteúdo manualmente.";
+      }
+    });
+  </script>
+</body>
+</html>
